@@ -10,6 +10,8 @@
     <style>
         :root { --blue: #1d72e8; --bg: #f8fafc; --white: #ffffff; --border: #e2e8f0; --text: #334155; --dark: #0f172a; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        /* LAYOUT BASE */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100dvh; overflow: hidden; color: var(--text); }
 
         /* UTILS */
@@ -21,6 +23,9 @@
         .btn-sec:active { background: #f1f5f9; }
         .btn-icon { padding: 8px; background: transparent; border: none; cursor: pointer; color: #94a3b8; font-size: 1.1rem; }
         .btn-icon:hover { color: var(--blue); }
+
+        /* MOBILE ONLY CLASS */
+        .mobile-only { display: none !important; }
 
         /* SETUP MODAL */
         #setupLayer { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -41,7 +46,7 @@
         }
         .info-tip.right-side:hover::after { left: auto; right: 0; transform: none; text-align: left; }
 
-        /* LAYOUT STRUCTURE */
+        /* APP CONTAINER */
         .app-container { display: flex; width: 100%; height: 100%; position: relative; }
         
         /* MOBILE HEADER (Hidden on Desktop) */
@@ -53,25 +58,35 @@
         .logo-img { height: 40px; width: auto; object-fit: contain; }
         .brand-name { font-weight: 800; font-size: 1.1rem; color: var(--dark); text-transform: uppercase; line-height: 1.1; }
         
-        /* Close Button Hidden by Default (Desktop) */
-        .close-sidebar-btn { display: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
+        /* Close Button Hidden on Desktop */
+        .mobile-close-btn { display: none; }
 
         .p-list { flex: 1; overflow-y: auto; padding: 15px; background: #fafafa; }
         .p-card { background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 8px; position: relative; transition:0.2s; }
         .p-card:hover { border-color: var(--blue); }
         .card-actions { position: absolute; top: 8px; right: 8px; display: flex; }
-        
         .sidebar-footer { padding: 20px; border-top: 1px solid var(--border); background: white; flex-shrink: 0; }
 
-        /* MAIN */
+        /* MAIN AREA */
         .main { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
         .top-bar { height: 60px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 30px; justify-content: space-between; flex-shrink: 0; }
         .steps { display: flex; gap: 20px; overflow-x: auto; height: 100%; align-items: center; }
         .step { font-weight: 600; color: #94a3b8; cursor: pointer; padding: 0 5px; height: 100%; display: flex; align-items: center; border-bottom: 3px solid transparent; font-size: 0.9rem; white-space: nowrap; }
         .step.active { color: var(--blue); border-bottom-color: var(--blue); }
 
-        .workspace { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; background: var(--bg); -webkit-overflow-scrolling: touch; }
-        .form-wrap { width: 100%; max-width: 800px; padding-bottom: 100px; }
+        /* WORKSPACE & FORM SCROLLING FIX */
+        .workspace { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+            background: var(--bg); 
+            -webkit-overflow-scrolling: touch; 
+        }
+        
+        /* FORM WRAP */
+        .form-wrap { width: 100%; max-width: 800px; padding-bottom: 50px; }
 
         /* EDITOR */
         .rte-container { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: white; margin-top: 8px; }
@@ -104,9 +119,11 @@
 
         /* --- MOBILE SPECIFIC CSS --- */
         @media (max-width: 768px) {
+            .mobile-only { display: block !important; }
             .app-container { flex-direction: column; margin-top: 60px; height: calc(100dvh - 60px); }
+            
             .mobile-header { display: flex; }
-            .logo-area { display: none; } /* Hide internal sidebar logo area completely on mobile when closed, handled by drawer logic */
+            .sidebar .logo-group { display: none; }
             
             .sidebar { 
                 position: fixed; top: 0; left: 0; bottom: 0; width: 85%; max-width: 300px; 
@@ -115,33 +132,33 @@
             }
             .sidebar.open { transform: translateX(0); }
             
-            /* Sidebar Logo Area inside Drawer */
+            /* Sidebar Context inside Drawer */
             .sidebar .logo-area { display: flex; justify-content: flex-end; } 
-            .sidebar .logo-area .logo-group { display: none; } /* Hide logo img inside drawer, just keep close btn */
+            .sidebar .logo-area .logo-group { display: none; }
             
-            /* Show close button ONLY on mobile */
-            .close-sidebar-btn { display: block; }
+            .mobile-close-btn { display: block; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
 
             .mobile-overlay.open { display: block; }
             
-            .main { width: 100%; }
+            .main { width: 100%; height: 100%; }
             .top-bar { padding: 0 15px; }
             .action-bar { left: 0; padding: 15px; }
-            .workspace { padding-bottom: 80px; }
+            
+            /* Scroll fix: Ensure padding is massive on mobile so nothing is hidden */
+            .workspace { padding-bottom: 0; }
+            .form-wrap { padding-bottom: 50px; }
         }
     </style>
 </head>
 <body>
 
-<!-- SETUP POPUP -->
+<!-- SETUP -->
 <div id="setupLayer">
     <div class="setup-card">
         <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:25px;">
             <img src="logo.png" onerror="this.style.display='none'" style="height:45px;">
             <div style="font-weight:800; font-size:1.4rem; color:#0f172a;">BRAND HACKERS</div>
         </div>
-        
-        <p style="color:#64748b; margin-bottom:20px;">Let's configure your workspace.</p>
         
         <div style="text-align:left; margin-bottom:20px;">
             <label style="margin-top:0">Your Store Name</label>
@@ -174,8 +191,8 @@
                 <img src="logo.png" onerror="this.style.display='none'" class="logo-img">
                 <span class="brand-name">BRAND HACKERS</span>
             </div>
-            <!-- Close Button (Hidden on Desktop via CSS) -->
-            <i class="fa-solid fa-xmark close-sidebar-btn" onclick="toggleSidebar()"></i>
+            <!-- X Button: Hidden by default, shown via 'mobile-only' class on small screens -->
+            <i class="fa-solid fa-xmark mobile-only" style="font-size:1.5rem; cursor:pointer; color:#94a3b8;" onclick="toggleSidebar()"></i>
         </div>
         
         <div class="p-list" id="productList">
@@ -229,7 +246,7 @@
                         <div id="pDesc" class="editor-content" contenteditable="true" onkeyup="updateToolbar()" onmouseup="updateToolbar()" onclick="updateToolbar()"></div>
                     </div>
 
-                    <label>Categories <span class="info-tip" data-text="Tags for Shopify (e.g. 'Summer', 'Men').">!</span></label>
+                    <label>Categories <span class="info-tip" data-text="Tags or Collections (e.g. 'Summer', 'Men').">!</span></label>
                     <div class="collection-area" style="background:white; border:1px solid var(--border); padding:15px; border-radius:8px;">
                         <div style="display:flex; gap:10px;">
                             <input type="text" id="newCat" placeholder="e.g. Summer" style="flex:1">
@@ -237,6 +254,9 @@
                         </div>
                         <div id="savedCollections" class="chip-box"></div>
                     </div>
+                    
+                    <!-- SPACER DIV TO FORCE SCROLL -->
+                    <div style="height: 150px; width: 100%; clear: both;"></div>
                 </div>
 
                 <!-- STEP 2 -->
@@ -264,6 +284,9 @@
                         </div>
                         <div id="variantList"></div>
                     </div>
+                    
+                    <!-- SPACER DIV -->
+                    <div style="height: 150px; width: 100%;"></div>
                 </div>
 
                 <!-- STEP 3 -->
@@ -276,6 +299,9 @@
                     </div>
                     <div id="upStatus" style="text-align:center; margin-top:15px; font-weight:bold; color:var(--blue);"></div>
                     <div id="imgPreview" style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; overflow-x:auto;"></div>
+                    
+                    <!-- SPACER DIV -->
+                    <div style="height: 150px; width: 100%;"></div>
                 </div>
 
             </div>
@@ -355,7 +381,7 @@
         }
     }
 
-    /* COLLECTIONS */
+    /* LOGIC */
     function addCollection() {
         const val = document.getElementById('newCat').value.trim();
         if(val) {
@@ -377,7 +403,6 @@
         renderCollections();
     }
 
-    /* OPTIONS */
     function addOptionRow() {
         if(form.opts.length >= 3) return;
         form.opts.push({n:'', v:''});
@@ -395,7 +420,6 @@
         `).join('');
     }
 
-    /* UPLOAD */
     async function uploadFiles() {
         const fs = document.getElementById('fileIn').files;
         document.getElementById('upStatus').innerText = `Uploading ${fs.length} images...`;
@@ -495,9 +519,7 @@
 
     function exportData() {
         if(state.products.length === 0) return alert("Nothing to submit");
-        // NEW SHOPIFY HEADER ORDER
         let csv = "Title,URL handle,Description,Vendor,Product category,Type,Tags,Published on online store,Status,SKU,Barcode,Option1 name,Option1 value,Option2 name,Option2 value,Option3 name,Option3 value,Price,Price / International,Compare-at price,Compare-at price / International,Cost per item,Charge tax,Tax code,Unit price total measure,Unit price total measure unit,Unit price base measure,Unit price base measure unit,Inventory tracker,Inventory quantity,Continue selling when out of stock,Weight value (grams),Weight unit for display,Requires shipping,Fulfillment service,Product image URL,Image position,Image alt text,Variant image URL,Gift card,SEO title,SEO description,Google Shopping / Google product category,Google Shopping / Gender,Google Shopping / Age group,Google Shopping / MPN,Google Shopping / AdWords Grouping,Google Shopping / AdWords labels,Google Shopping / Condition,Google Shopping / Custom product,Google Shopping / Custom label 0,Google Shopping / Custom label 1,Google Shopping / Custom label 2,Google Shopping / Custom label 3,Google Shopping / Custom label 4\n";
-        
         const esc = t => `"${(t||"").toString().replace(/"/g, '""')}"`;
 
         state.products.forEach(p => {
@@ -524,41 +546,11 @@
                 let v = vars[i] || {};
                 let img = p.imgs[i] || "";
                 let f = (i===0);
-                
-                // MAPPING TO NEW EXACT COLUMN ORDER
                 let row = [
-                    f?esc(p.title):"",          // Title
-                    h,                          // URL handle
-                    f?esc(p.desc):"",           // Description
-                    f?esc(p.vendor):"",         // Vendor
-                    "",                         // Product category
-                    "",                         // Type
-                    f?esc(p.cats.join(',')):"", // Tags
-                    "TRUE",                     // Published
-                    "active",                   // Status
-                    v.o1v?p.sku:"",             // SKU
-                    "",                         // Barcode
-                    v.o1n||"", v.o1v||"",       // Opt1
-                    v.o2n||"", v.o2v||"",       // Opt2
-                    v.o3n||"", v.o3v||"",       // Opt3
-                    v.o1v?p.price:"",           // Price
-                    "",                         // Price / Intl
-                    v.o1v?p.compare:"",         // Compare-at price
-                    "",                         // Compare-at / Intl
-                    "",                         // Cost per item
-                    "TRUE",                     // Charge tax
-                    "",                         // Tax code
-                    "", "", "", "",             // Unit prices
-                    "shopify",                  // Inventory tracker
-                    v.o1v?p.qty:"",             // Inventory qty
-                    "deny",                     // Continue selling
-                    "0", "g", "TRUE", "manual", // Weight, Shipping, Fulfillment
-                    img,                        // Image URL
-                    img?(i+1):"",               // Image Position
-                    "",                         // Alt Text
-                    "",                         // Variant Image
-                    "FALSE",                    // Gift Card
-                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" // SEO & Google fields
+                    f?esc(p.title):"", f?esc(p.desc):"", f?esc(p.vendor):"", f?esc(p.cats.join(',')):"", "TRUE",
+                    v.o1n||"", v.o1v||"", v.o2n||"", v.o2v||"", v.o3n||"", v.o3v||"",
+                    v.o1v?p.sku:"", v.o1v?p.price:"", v.o1v?p.compare:"", v.o1v?p.qty:"",
+                    img, img?(i+1):""
                 ];
                 csv += row.join(",") + "\n";
             }
